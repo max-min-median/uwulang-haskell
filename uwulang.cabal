@@ -1,0 +1,60 @@
+cabal-version:      3.0
+name:               uwulang
+version:            0.1.0.0
+synopsis:           Interpreter for the 'uwulang' language
+-- description:
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             max-min-median
+maintainer:         152759160+max-min-median@users.noreply.github.com
+-- copyright:
+category:           Language
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Parser, Executor, Values, Env, Builtins
+                      , Types.Executor
+                      , Types.Operators
+                      , Types.Expressions
+                      , Types.Statements
+                      , Types.Values
+                      , Types.Types
+    other-modules:
+    default-extensions: LambdaCase, OverloadedStrings
+    -- other-extensions:
+    build-depends:    base ^>=4.22.0.0, megaparsec, text, containers, bytestring, mtl, vector, time, haskeline
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable uwulang
+    import:           warnings
+    main-is:          Main.hs
+    -- other-modules:
+    -- other-extensions:
+    default-extensions: LambdaCase, OverloadedStrings
+    build-depends:
+        base ^>=4.22.0.0, text,
+        uwulang
+
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite uwulang-test
+    import:           warnings
+    default-language: Haskell2010
+    -- other-modules:
+    -- other-extensions:
+    default-extensions: LambdaCase, OverloadedStrings
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    build-depends:
+        base ^>=4.22.0.0,
+        uwulang,
+        megaparsec, text, mtl, containers, haskeline, time
