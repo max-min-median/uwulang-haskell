@@ -1,0 +1,78 @@
+fn parentOf(i: int) -> int { return (i - 1) / 2; }
+fn firstChildOf(i: int) -> int { return 2 * i + 1; }
+
+fn swap(arr: array[int], i: int, j: int) {
+    let tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+}
+
+fn heapPush(heap: array[int], val: int) {
+    heap.push(val);
+    heapSiftUp(heap, len(heap) - 1);
+}
+
+fn heapSiftUp(heap: array[int], i: int) {
+    if i == 0 { return; }
+    if heap[i] < heap[parentOf(i)] {
+        swap(heap, i, parentOf(i));
+        heapSiftUp(heap, parentOf(i));
+    }
+}
+
+fn heapSiftDown(heap: array[int], i: int) {
+    let n = len(heap);
+    let left = firstChildOf(i);
+    let right = left + 1;
+    var smallest = i;
+
+    if left < n and heap[left] < heap[smallest] {
+        smallest = left;
+    }
+    if right < n and heap[right] < heap[smallest] {
+        smallest = right;
+    }
+    if smallest != i {
+        swap(heap, i, smallest);
+        heapSiftDown(heap, smallest);
+    }
+}
+
+fn heapPop(heap: array[int]) -> int {
+    let result = heap[0];
+    let last = heap.pop();
+    if len(heap) > 0 {
+        heap[0] = last;
+        heapSiftDown(heap, 0);
+    }
+    return result;
+}
+
+var numbers: array[int] = [
+    83, 12, 47, 91, 3, 56, 29, 74, 8, 65,
+    40, 17, 99, 22, 61, 5, 88, 34, 71, 19,
+    50, 6, 93, 27, 45, 79, 14, 62, 38, 84,
+    2, 58, 31, 96, 11, 69, 44, 25, 77, 9,
+    53, 86, 20, 67, 4, 92, 36, 15, 81, 60,
+    28, 73, 7, 49, 90, 33, 66, 18, 55, 41,
+    97, 23, 70, 1, 87, 30, 63, 13, 76, 42,
+    89, 26, 59, 10, 95, 37, 64, 21, 80, 46,
+    54, 68, 0, 94, 16, 39, 82, 24, 57, 98,
+    35, 72, 43, 85, 32, 51, 78, 48, 75, 52
+];
+
+var priorityQueue: array[int] = [];
+
+var i = 0;
+while i < len(numbers) {
+    heapPush(priorityQueue, numbers[i]);
+    i += 1;
+}
+
+println("{}", len(priorityQueue));
+
+i = 0;
+while len(priorityQueue) > 0 {
+    print("{} ", heapPop(priorityQueue));
+    println("");
+}
