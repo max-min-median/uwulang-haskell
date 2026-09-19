@@ -175,6 +175,7 @@ eval = \case
   PrefixExpr _ _ -> error "Unreachable"
   IndexExpr arrExpr idxExpr -> do
     idx <- evalFull idxExpr >>= toArrayIndex
+    when (idx < 0) $ throwError (IndexError ("indexing cannot be done with with negative indices"))
     evalFull arrExpr >>= \case
       ValArray _ _ lenRef vecRef -> do
         len <- liftIO (readIORef lenRef)
@@ -198,7 +199,7 @@ eval = \case
         when (length params /= length args) $ throwError $ ArityMismatch (funcId <> ": expected " <> T.show (length params) <> " arguments but received " <> T.show (length args))
         newFrame
         let makeArg (paramId, paramType) argExpr = do
-              ref <- evalFull argExpr >>= coerce Nothing paramType >>= liftIO . newIORef
+              ref <- evalFull argExpr >>= coerce (Just True) paramType >>= liftIO . newIORef
               newLocal paramId (Variable paramId True paramType ref)
         zipWithM_ makeArg params args
         val <- runStatement fnBody >>= \case

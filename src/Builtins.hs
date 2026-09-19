@@ -47,7 +47,7 @@ fnPrint :: [Value] -> Executor Value
 fnPrint args = fnFormat args >>= liftIO . TIO.putStr . valToText >> pure ValVoid
 
 fnPrintln :: [Value] -> Executor Value
-fnPrintln args = fnPrint args >>= \val -> liftIO (TIO.putStrLn "") >> pure val
+fnPrintln args = fnPrint args >> liftIO (TIO.putStrLn "") >> pure ValVoid
 
 fnFormat :: [Value] -> Executor Value
 fnFormat = \case
@@ -62,7 +62,7 @@ fnFormat = \case
     go = \cases
       ('{':'{':xs) args'       -> ("{":) <$> go xs args'
       ('}':'}':xs) args'       -> ("}":) <$> go xs args'
-      ('{':'}':xs) (arg:args') -> (show arg:) <$> go xs args'
+      ('{':'}':xs) (arg:args') -> (T.unpack (valToText arg):) <$> go xs args'
       ('{':'}':_) []           -> throwError $ ArityMismatch ("format: more placeholders than arguments")
       (x:xs) args'             -> ([x]:) <$> go xs args'
       [] (_:_)                 -> throwError $ ArityMismatch ("format: more arguments than placeholders")
