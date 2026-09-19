@@ -36,7 +36,9 @@ runExecutor replMode' f = freshEnv replMode' >>= runExceptT . runReaderT f >>= \
 
 runREPL :: IO (Either Error a)
 runREPL = do
-  putStrLn "Welcome to 'uwulang' v0.1.0.0 --- (c) max-min-median 2026"
+  putStrLn "\ESC[94mWelcome to \ESC[38;5;208muwulang\ESC[93m v0.1.0.0\ESC[94m --- \ESC[32m(c) max-min-median 2026\ESC[0m"
+  -- putStrLn "\ESC[94mWelcome to '\ESC[93muwulang\ESC[94m' \ESC[32mv0.1.0.0\ESC[94m --- \ESC[38;5;208m(c) max-min-median 2026\ESC[0m"
+  -- putStrLn "Welcome to 'uwulang' v0.1.0.0 --- (c) max-min-median 2026"
   runExecutor True (runInputT defaultSettings repl)
   where
     repl = forever $ do
@@ -59,7 +61,7 @@ runProgram stmts = foldM runEach ExecOK stmts >>= processResult
       ExecOK stmt -> runStatement stmt
       otherRet _  -> pure otherRet
     processResult = \case
-      ExecOK   -> liftIO $ putStrLn "Execution OK (TODO: add time taken)"
+      ExecOK   -> getElapsedTime >>= \totaltime -> liftIO $ putStrLn ("Execution OK (ran in " <> show totaltime <> "s)")
       Continue -> liftIO $ putStrLn "Unexpected 'continue' reached... Terminating"
       Break    -> liftIO $ putStrLn "Unexpected 'break' reached... Terminating"
       Return _ -> liftIO $ putStrLn "Unexpected 'return' reached... Terminating"

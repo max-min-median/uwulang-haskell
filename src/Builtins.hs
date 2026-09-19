@@ -93,13 +93,15 @@ fnType = \case
   [val] -> pure $ ValStr (T.show (valType val))
   args  -> throwError $ ArityMismatch ("type: expected 1 argument but received " <> T.show (length args))
 
+getElapsedTime :: Executor Double
+getElapsedTime = do
+  now <- liftIO getCurrentTime
+  start <- asks startTime
+  pure $ realToFrac (now `diffUTCTime` start)
+
 fnElapsed :: [Value] -> Executor Value
 fnElapsed = \case
-  []   -> do
-    now <- liftIO getCurrentTime
-    start <- asks startTime
-    let diff = now `diffUTCTime` start
-    pure $ ValFloat (realToFrac diff)
+  []   -> ValFloat <$> getElapsedTime
   args -> throwError $ ArityMismatch ("elapsed: expected 0 arguments but received " <> T.show (length args))
 
 fnInput :: [Value] -> Executor Value
